@@ -19,13 +19,13 @@ option = st.sidebar.selectbox('Select an option', options)
 # Load model, scaler, and metrics data
 @st.cache_resource
 def load_model_and_scaler():
-    model = joblib.load(r'C:\Users\Shreyansh Singh\Desktop\splunk_hackathon\encodings\xgb_model.pkl')
-    scaler = joblib.load(r'C:\Users\Shreyansh Singh\Desktop\splunk_hackathon\encodings\esg_scaler.pkl')
+    model = joblib.load('xgb_model.pkl')
+    scaler = joblib.load('esg_scaler.pkl')
     return model, scaler
 
 @st.cache_data
 def load_metrics():
-    return pd.read_csv(r'C:\Users\Shreyansh Singh\Desktop\splunk_hackathon\data\model_metrics_comparison.csv', index_col=0)
+    return pd.read_csv('model_metrics_comparison.csv', index_col=0)
 
 model, scaler = load_model_and_scaler()
 metrics_df = load_metrics()
@@ -130,7 +130,7 @@ elif option == 'Model Metrics Chat':
 
     @st.cache_data
     def load_final_csv():
-        return pd.read_csv(r'C:\Users\Shreyansh Singh\Desktop\splunk_hackathon\data\final.csv')
+        return pd.read_csv('final.csv')
 
     df = load_final_csv()
 

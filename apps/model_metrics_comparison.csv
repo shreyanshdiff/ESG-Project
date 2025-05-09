@@ -1,0 +1,6 @@
+,Accuracy,Precision,Recall,F1 Score
+Gradient Boosting,1.0,1.0,1.0,1.0
+Random Forest,0.9901,0.9804,0.9901,0.9852
+XGBoost,0.9901,0.9903,0.9901,0.9901
+Stacked Ensemble,0.9901,0.9812,0.9901,0.9854
+Neural Network,0.901,0.8823,0.901,0.8915
