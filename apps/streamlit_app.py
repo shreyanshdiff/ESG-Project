@@ -3,7 +3,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import os
-from groq import Groq
+import requests
 
 # Set page config
 st.set_page_config(
@@ -129,7 +129,6 @@ elif option == 'Model Metrics Chat':
 
     # --- Groq Assistant Section ---
     os.environ['GROQ_API_KEY'] = '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'
-    client = Groq()
 
     @st.cache_data
     def load_final_csv():
@@ -175,23 +174,23 @@ elif option == 'Model Metrics Chat':
             """
 
         def get_llm_response(prompt, df_info):
-            system_prompt = f"You are an assistant analyzing ESG data:\n{df_info}"
-            try:
-                response = client.chat.completions.create(
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": prompt}
-                    ],
-                    model="gemma2-9b-it",
-                    temperature=0.1,
-                    max_tokens=1024
-                )
-                return response.choices[0].message.content
-            except Exception as e:
-                return f"Error: {str(e)}"
+           headers = {
+         "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
+         "Content-Type": "application/json"
+             }
+           data = {
+                   "model": "gemma2-9b-it",
+                   "messages": [
+            {"role": "system", "content": f"You are an assistant analyzing ESG data:\n{df_info}"},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.1,
+        "max_tokens": 1024
+    }
 
-        with st.chat_message("assistant"):
-            with st.spinner("Analyzing..."):
-                reply = get_llm_response(prompt, df_info)
-                st.markdown(reply)
-                st.session_state.messages.append({"role": "assistant", "content": reply})
+    try:
+        response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=data)
+        response.raise_for_status()
+        return response.json()["choices"][0]["message"]["content"]
+    except Exception as e:
+        return f"Error: {str(e)}"
