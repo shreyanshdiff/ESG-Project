@@ -42,7 +42,7 @@ stage('Build Model Artifacts'){
         }
     }
 }
-stage('Deploy Streamli app'){
+stage('Deploy Streamlit app'){
     steps{
         script{
             bat """
