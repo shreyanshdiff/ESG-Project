@@ -74,8 +74,6 @@ if option == 'Prediction':
 # --- MODEL METRICS CHAT TAB ---
 elif option == 'Model Metrics Chat':
     st.title("Model Metrics Chat Assistant")
-
-    # Chat logic for simple metric Q&A
     st.markdown("Chat with the model metrics data to get insights about model performance.")
 
     if 'chat_history' not in st.session_state:
@@ -136,7 +134,7 @@ elif option == 'Model Metrics Chat':
 
     df = load_final_csv()
 
-    st.title(" ESG Data Chat Assistant")
+    st.title("ESG Data Chat Assistant")
     st.markdown("Ask questions about ESG trends, patterns, or specific metrics in the dataset.")
 
     chat_type = st.radio("Select Chat Type", ["General Analysis", "Data Insights"], horizontal=True)
@@ -174,23 +172,28 @@ elif option == 'Model Metrics Chat':
             """
 
         def get_llm_response(prompt, df_info):
-           headers = {
-         "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
-         "Content-Type": "application/json"
-             }
-           data = {
-                   "model": "gemma2-9b-it",
-                   "messages": [
-            {"role": "system", "content": f"You are an assistant analyzing ESG data:\n{df_info}"},
-            {"role": "user", "content": prompt}
-        ],
-        "temperature": 0.1,
-        "max_tokens": 1024
-    }
+            headers = {
+                "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
+                "Content-Type": "application/json"
+            }
+            data = {
+                "model": "gemma2-9b-it",
+                "messages": [
+                    {"role": "system", "content": f"You are an assistant analyzing ESG data:\n{df_info}"},
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.1,
+                "max_tokens": 1024
+            }
 
-    try:
-        response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=data)
-        response.raise_for_status()
-        return response.json()["choices"][0]["message"]["content"]
-    except Exception as e:
-        return f"Error: {str(e)}"
+            try:
+                response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=data)
+                response.raise_for_status()
+                return response.json()["choices"][0]["message"]["content"]
+            except Exception as e:
+                return f"Error: {str(e)}"
+
+        assistant_response = get_llm_response(prompt, df_info)
+        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
+        with st.chat_message("assistant"):
+            st.markdown(assistant_response)
